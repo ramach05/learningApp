@@ -11,7 +11,7 @@ export enum RequestMethod {
     DELETE = 'DELETE',
 }
 
-class ApiClient {
+class ApiClient { //?-------
     private readonly errorSubj$ = new Subject<AjaxError>();
 
     readonly RequestMethod = RequestMethod;

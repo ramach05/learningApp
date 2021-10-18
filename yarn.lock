@@ -1240,7 +1240,7 @@
     tslib "^1.10.0"
     typelevel-ts "^0.3.5"
 
-"@devexperts/remote-data-ts@^2.0.0", "@devexperts/remote-data-ts@^2.0.5":
+"@devexperts/remote-data-ts@^2.0.0":
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/@devexperts/remote-data-ts/-/remote-data-ts-2.0.5.tgz#7a8ec88587ca132e8d608e23abf453423026f63b"
   integrity sha512-Eb84KGBFyhGFIK0WCyl7pT0MSOaj+4ZWJLBd7gaW6/GyeMBzpOyZyJls8QIYcpef3hUPx4rH0x2Dy3xq9mUFaw==
@@ -1249,6 +1249,11 @@
     io-ts "^2.0.0"
     io-ts-types "^0.5.7"
     tslib "^1.9.3"
+
+"@devexperts/remote-data-ts@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@devexperts/remote-data-ts/-/remote-data-ts-2.1.1.tgz#feb6aba257c8b4c7478ee3f85ee95f717657e7c3"
+  integrity sha512-z0RblCmeQjYt0vM1g1qR2SzHM1FXZXpBEzokYAojN8n4yC2jIInngeggmqPTOZna2+i7HInDoDm0CGK50W7Llg==
 
 "@devexperts/rx-utils@^1.0.0-alpha.14":
   version "1.0.0-alpha.14"
