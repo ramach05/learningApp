@@ -7,6 +7,7 @@ import { map, switchMap, tap } from "rxjs/operators";
 import { Observable, of, Subject } from "rxjs";
 import * as RD from "@devexperts/remote-data-ts";
 import { AjaxError } from "rxjs/ajax";
+import { link } from "fs";
 
 const getPostsData = postsController.getPosts;
 const postOneItem = postsController.postItem;
@@ -38,8 +39,11 @@ export const postsViewModel = (): TPostsViewModel => {
   const postOneItem$ = of(() => postOneItemTrigger$.next());
 
   const postOneItemTrigger$ = new Subject();
+
   const postOneItemStream$ = postOneItemTrigger$.pipe(
-    switchMap(() => postOneItem().pipe(tap((data) => dataStream$.next(data))))
+    switchMap((title, body) =>
+      postOneItem(title, body).pipe(tap((data) => dataStream$.next(data)))
+    )
   );
 
   return {
