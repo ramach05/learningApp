@@ -37,8 +37,8 @@ const Container = combineContext(ask<PostsContainerContext>(), (e) =>
 
 export const PostsContainer = runOnMount(
   Container,
-  () =>
+  (title: string, body: string) =>
     new Sink({
-      postViewModel: postsViewModel(),
+      postViewModel: postsViewModel(title, body),
     })
 );

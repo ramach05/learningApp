@@ -20,7 +20,10 @@ export type TPostsViewModel = {
   postOneItemStream$: Observable<RD.RemoteData<AjaxError, TApiGetResponse>>;
 };
 
-export const postsViewModel = (): TPostsViewModel => {
+export const postsViewModel = (
+  title: string,
+  body: string
+): TPostsViewModel => {
   // Simulation of business logic, just shortening the data
   const getPostsData$ = getPostsData().pipe(
     map(
@@ -41,7 +44,7 @@ export const postsViewModel = (): TPostsViewModel => {
   const postOneItemTrigger$ = new Subject();
 
   const postOneItemStream$ = postOneItemTrigger$.pipe(
-    switchMap((title, body) =>
+    switchMap(() =>
       postOneItem(title, body).pipe(tap((data) => dataStream$.next(data)))
     )
   );
