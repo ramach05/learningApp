@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import * as RD from "@devexperts/remote-data-ts";
-import { TPostResponseShortData } from "../view-models/posts.view-model";
+import {
+  TPostResponseShortData,
+  TRequest,
+} from "../view-models/posts.view-model";
 import { AjaxError } from "rxjs/ajax";
 import { pipe } from "fp-ts/pipeable";
 
 export type TPostsViewProps = {
   getPostsData: RD.RemoteData<AjaxError, TPostResponseShortData[]>;
-  postOneItem: () => void;
+  postOneItem: (req: TRequest) => void;
 };
 
 export const PostsView = (props: TPostsViewProps) => {
@@ -26,7 +29,10 @@ export const PostsView = (props: TPostsViewProps) => {
 
   const onAddOneItem = (e: any) => {
     e.preventDefault();
-    props.postOneItem(inputState.titleInput, inputState.bodyInput);
+    props.postOneItem({
+      title: inputState.titleInput,
+      body: inputState.bodyInput,
+    });
   };
 
   const handleChangeInput = (e: any) => {
