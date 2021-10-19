@@ -7,11 +7,12 @@ export type TApiItem = {
   body: string;
 };
 
-type TApiGetResponse = TApiItem[];
+export type TApiGetResponse = TApiItem[];
 
 const postsControllerInternal = () => {
   const getPosts = () =>
     Api.get<TApiGetResponse>("https://jsonplaceholder.typicode.com/posts");
+
   const postItem = () =>
     Api.post<TApiGetResponse>("https://jsonplaceholder.typicode.com/posts", {
       title: "new title 4242",
