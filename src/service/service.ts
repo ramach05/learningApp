@@ -57,5 +57,3 @@ class ApiClient {
 }
 
 export const Api = new ApiClient();
-
-// Api.post('asdasd', 'asdas')

@@ -8,6 +8,8 @@ import { PostsView, TPostsViewProps } from "../components/Posts.component";
 import { runOnMount } from "../utils/react.util";
 import { Sink } from "@devexperts/rx-utils/dist/sink.utils";
 import * as RD from "@devexperts/remote-data-ts";
+import { merge } from "rxjs";
+import { constUndefined } from "fp-ts/function";
 
 export type PostsContainerContext = {
   postViewModel: TPostsViewModel;
@@ -16,18 +18,19 @@ export type PostsContainerContext = {
 const Container = combineContext(ask<PostsContainerContext>(), (e) =>
   withRX<TPostsViewProps>(PostsView)(() => {
     const {
-      postViewModel: { getPostsData$, postOneTitle$ },
+      postViewModel: { getPostsData$, postOneItem$, postOneItemStream$ },
     } = e;
 
     return {
       props: {
         getPostsData: getPostsData$,
-        postOneTitle: postOneTitle$,
+        postOneItem: postOneItem$,
       },
       defaultProps: {
         getPostsData: RD.initial,
-        postOneTitle: RD.initial,
+        postOneItem: constUndefined,
       },
+      effects$: merge(postOneItemStream$),
     };
   })
 );
