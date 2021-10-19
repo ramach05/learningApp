@@ -15,7 +15,6 @@ const renderPostsInfo = (postInfo: TPostResponseShortData) =>
         <p>{postInfo.body}</p>
     </div>;
 
-
 const LoadingSpinner = () => <p>Loading ...</p>;
 
 export const PostsView = (props: TPostsViewProps) => {
@@ -23,7 +22,6 @@ export const PostsView = (props: TPostsViewProps) => {
         console.log('props :>> ', props);
         // props.postOneTitle();
     }
-
 
     return pipe(
         props.getPostsData,
