@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import * as RD from "@devexperts/remote-data-ts";
 import { TPostResponseShortData } from "../view-models/posts.view-model";
 import { AjaxError } from "rxjs/ajax";
@@ -10,6 +10,13 @@ export type TPostsViewProps = {
 };
 
 export const PostsView = (props: TPostsViewProps) => {
+  const [inputState, setInputState] = useState({
+    titleInput: "",
+    bodyInput: "",
+  });
+
+  console.log("inputState :>> ", inputState);
+
   const renderPostsInfo = (postInfo: TPostResponseShortData) => (
     <div key={postInfo.id}>
       <h3>Title: {postInfo.title}</h3>
@@ -19,7 +26,16 @@ export const PostsView = (props: TPostsViewProps) => {
 
   const onAddOneItem = (e: any) => {
     e.preventDefault();
-    props.postOneItem();
+    props.postOneItem(inputState.titleInput, inputState.bodyInput);
+  };
+
+  const handleChangeInput = (e: any) => {
+    if (e.target.id === "input-title") {
+      return setInputState((prev) => ({ ...prev, titleInput: e.target.value }));
+    }
+    if (e.target.id === "input-body") {
+      return setInputState((prev) => ({ ...prev, bodyInput: e.target.value }));
+    }
   };
 
   return pipe(
@@ -33,8 +49,22 @@ export const PostsView = (props: TPostsViewProps) => {
           <h1>All posts</h1>
 
           <form onSubmit={onAddOneItem}>
-            <input type="text" autoComplete="off" placeholder="Title" />
-            <input type="text" autoComplete="off" placeholder="Body" />
+            <input
+              id="input-title"
+              type="text"
+              autoComplete="off"
+              placeholder="Title"
+              onChange={handleChangeInput}
+              value={inputState.titleInput}
+            />
+            <input
+              id="input-body"
+              type="text"
+              autoComplete="off"
+              placeholder="Body"
+              onChange={handleChangeInput}
+              value={inputState.bodyInput}
+            />
             <button type="submit">Add one item</button>
           </form>
 

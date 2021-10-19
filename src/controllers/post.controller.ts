@@ -13,10 +13,10 @@ const postsControllerInternal = () => {
   const getPosts = () =>
     Api.get<TApiGetResponse>("https://jsonplaceholder.typicode.com/posts");
 
-  const postItem = () =>
+  const postItem = (title: string, body: string) =>
     Api.post<TApiGetResponse>("https://jsonplaceholder.typicode.com/posts", {
-      title: "new title 4242",
-      body: "new body 424242",
+      title,
+      body,
     });
 
   return {
