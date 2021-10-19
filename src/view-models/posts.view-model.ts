@@ -3,11 +3,11 @@ import {
   TApiGetResponse,
   TApiItem,
 } from "../controllers/post.controller";
-import { map, switchMap, tap } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
+import { switchMap } from 'rxjs/internal/operators';
 import { Observable, of, Subject } from "rxjs";
 import * as RD from "@devexperts/remote-data-ts";
 import { AjaxError } from "rxjs/ajax";
-import { link } from "fs";
 
 const getPostsData = postsController.getPosts;
 const postOneItem = postsController.postItem;
@@ -16,10 +16,14 @@ export type TPostResponseShortData = Pick<TApiItem, "title" | "body" | "id">;
 
 export type TPostsViewModel = {
   getPostsData$: Observable<RD.RemoteData<AjaxError, TPostResponseShortData[]>>;
-  postOneItem$: Observable<() => void>;
+  postOneItem$: Observable<(req: TRequest) => void>;
   postOneItemStream$: Observable<RD.RemoteData<AjaxError, TApiGetResponse>>;
 };
 
+export type TRequest = {
+    title: string;
+    body: string;
+}
 export const postsViewModel = (): TPostsViewModel => {
   // Simulation of business logic, just shortening the data
   const getPostsData$ = getPostsData().pipe(
@@ -36,14 +40,15 @@ export const postsViewModel = (): TPostsViewModel => {
 
   const dataStream$ = new Subject();
 
-  const postOneItem$ = of(() => postOneItemTrigger$.next());
+  const postOneItem$ = of((request: TRequest) => postOneItemTrigger$.next(request));
 
   const postOneItemTrigger$ = new Subject();
 
   const postOneItemStream$ = postOneItemTrigger$.pipe(
-    switchMap((title, body) =>
-      postOneItem(title, body).pipe(tap((data) => dataStream$.next(data)))
-    )
+      //@ts-ignore
+      switchMap((req: TRequest) => postOneItem(req.title, req.body).pipe(
+          tap((data) => dataStream$.next(data))
+      ))
   );
 
   return {
