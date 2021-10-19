@@ -39,7 +39,7 @@ export const postsViewModel = (): TPostsViewModel => {
 
   const postOneItemTrigger$ = new Subject();
   const postOneItemStream$ = postOneItemTrigger$.pipe(
-    switchMap(() => postOneItem().pipe(tap(dataStream$)))
+    switchMap(() => postOneItem().pipe(tap((data) => dataStream$.next(data))))
   );
 
   return {

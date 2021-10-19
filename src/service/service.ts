@@ -12,7 +12,6 @@ export enum RequestMethod {
 }
 
 class ApiClient {
-  //?-------
   private readonly errorSubj$ = new Subject<AjaxError>();
 
   readonly RequestMethod = RequestMethod;
