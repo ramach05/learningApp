@@ -19,9 +19,15 @@ const postsControllerInternal = () => {
       body,
     });
 
+  const deleteItem = (id: number) =>
+    Api.delete<TApiGetResponse>(
+      `https://jsonplaceholder.typicode.com/posts/${id}`
+    );
+
   return {
     getPosts,
     postItem,
+    deleteItem,
   };
 };
 

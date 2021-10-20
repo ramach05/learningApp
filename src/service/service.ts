@@ -7,8 +7,8 @@ import { of } from "rxjs";
 export enum RequestMethod {
   GET = "GET",
   POST = "POST",
-  PUT = "PUT",
   DELETE = "DELETE",
+  PATCH = "PATCH",
 }
 
 class ApiClient {
@@ -51,6 +51,15 @@ class ApiClient {
       url,
       body,
       method: this.RequestMethod.POST,
+    });
+  };
+
+  readonly delete = <Response>(
+    url: string
+  ): Observable<RD.RemoteData<AjaxError, Response>> => {
+    return this.request({
+      url,
+      method: this.RequestMethod.DELETE,
     });
   };
 }

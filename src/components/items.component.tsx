@@ -3,13 +3,14 @@ import * as RD from "@devexperts/remote-data-ts";
 import {
   TPostResponseShortData,
   TRequest,
-} from "../view-models/posts.view-model";
+} from "../view-models/item.view-model";
 import { AjaxError } from "rxjs/ajax";
 import { pipe } from "fp-ts/pipeable";
 
 export type TPostsViewProps = {
   getPostsData: RD.RemoteData<AjaxError, TPostResponseShortData[]>;
   postOneItem: (req: TRequest) => void;
+  deleteOneItem: (id: number) => void;
 };
 
 export const PostsView = (props: TPostsViewProps) => {
@@ -21,11 +22,40 @@ export const PostsView = (props: TPostsViewProps) => {
   console.log("inputState :>> ", inputState);
 
   const renderPostsInfo = (postInfo: TPostResponseShortData) => (
-    <div key={postInfo.id}>
-      <h3>Title: {postInfo.title}</h3>
-      <p>{postInfo.body}</p>
+    <div className="post" key={postInfo.id}>
+      <h3 className="post--title">Title: {postInfo.title}</h3>
+      <p className="post--body">{postInfo.body}</p>
+
+      {/* <button type="button">Refactor</button>
+      <form onSubmit={onRefactorItem}>
+        <input
+          id="refactor-input-title"
+          type="text"
+          autoComplete="off"
+          placeholder="Title"
+          onChange={handleChangeInput}
+          value={inputState.titleInput}
+        />
+        <input
+          id="refactor-input-body"
+          type="text"
+          autoComplete="off"
+          placeholder="Body"
+          onChange={handleChangeInput}
+          value={inputState.bodyInput}
+        />
+        <button type="submit">ОК</button>
+      </form> */}
+
+      <button type="button" onClick={() => onDeleteOneItem(postInfo.id)}>
+        Delete
+      </button>
     </div>
   );
+
+  const onDeleteOneItem = (id: number) => {
+    props.deleteOneItem(id);
+  };
 
   const onAddOneItem = (e: any) => {
     e.preventDefault();
@@ -51,7 +81,7 @@ export const PostsView = (props: TPostsViewProps) => {
       () => <p>Loading ...</p>,
       () => null,
       (data) => (
-        <section>
+        <section className="sectionPosts">
           <h1>All posts</h1>
 
           <form onSubmit={onAddOneItem}>

@@ -3,8 +3,8 @@ import { withRX } from "@devexperts/react-kit/dist/utils/with-rx2";
 import {
   postsViewModel,
   TPostsViewModel,
-} from "../view-models/posts.view-model";
-import { PostsView, TPostsViewProps } from "../components/Posts.component";
+} from "../view-models/item.view-model";
+import { PostsView, TPostsViewProps } from "../components/items.component";
 import { runOnMount } from "../utils/react.util";
 import { Sink } from "@devexperts/rx-utils/dist/sink.utils";
 import * as RD from "@devexperts/remote-data-ts";
@@ -18,19 +18,28 @@ export type PostsContainerContext = {
 const Container = combineContext(ask<PostsContainerContext>(), (e) =>
   withRX<TPostsViewProps>(PostsView)(() => {
     const {
-      postViewModel: { getPostsData$, postOneItem$, postOneItemStream$ },
+      postViewModel: {
+        getPostsData$,
+        postOneItem$,
+        postOneItemStream$,
+        deleteOneItem$,
+        deleteOneItemStream$,
+      },
     } = e;
 
     return {
       props: {
         getPostsData: getPostsData$,
         postOneItem: postOneItem$,
+        deleteOneItem: deleteOneItem$,
       },
       defaultProps: {
         getPostsData: RD.initial,
         postOneItem: constUndefined,
+        deleteOneItem: constUndefined,
       },
       effects$: merge(postOneItemStream$),
+      // effects$: merge(deleteOneItemStream$), //?---------------
     };
   })
 );
