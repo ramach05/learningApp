@@ -20,6 +20,9 @@ export const PostsView = (props: TPostsViewProps) => {
     bodyInputAdd: "",
   });
 
+  console.log("props :>> ", props);
+  // console.log("props.postOneItem :>> ", props.postOneItem);
+
   const renderPostsInfo = (itemData: TPostResponseShortData) => (
     <div className="item" key={itemData.id}>
       <h3 className="item--title">Title: {itemData.title}</h3>
@@ -68,8 +71,6 @@ export const PostsView = (props: TPostsViewProps) => {
       }));
     }
   };
-
-  console.log("props.getPostsData :>> ", props.getPostsData);
 
   return pipe(
     props.getPostsData,

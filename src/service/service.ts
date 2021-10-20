@@ -45,12 +45,15 @@ class ApiClient {
 
   readonly post = <Response>(
     url: string,
-    body: { title: string; body: string }
+    body: { title: string; body: string; userId: number }
   ): Observable<RD.RemoteData<AjaxError, Response>> => {
     return this.request({
       url,
       body,
       method: this.RequestMethod.POST,
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
     });
   };
 

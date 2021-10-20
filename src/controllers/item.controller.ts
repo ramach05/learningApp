@@ -13,10 +13,11 @@ const postsControllerInternal = () => {
   const getPosts = () =>
     Api.get<TApiGetResponse>("https://jsonplaceholder.typicode.com/posts");
 
-  const postItem = (title: string, body: string) =>
+  const postItem = (title: string, body: string, userId: number = 42) =>
     Api.post<TApiGetResponse>("https://jsonplaceholder.typicode.com/posts", {
       title,
       body,
+      userId,
     });
 
   const deleteItem = (id: number) =>
