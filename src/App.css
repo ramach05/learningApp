@@ -1,18 +1,18 @@
-.sectionPosts {
+.sectionItems {
   margin: 0 30px;
   padding: 0;
 }
 
-.post {
+.item {
   margin: 15px 0 0;
 }
 
-.post--title {
+.item--title {
   margin: 0;
   padding: 0;
 }
 
-.post--body {
+.item--body {
   margin: 0;
   padding: 0;
 }

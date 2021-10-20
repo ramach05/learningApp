@@ -18,29 +18,29 @@ export type PostsContainerContext = {
 const Container = combineContext(ask<PostsContainerContext>(), (e) =>
   withRX<TPostsViewProps>(PostsView)(() => {
     const {
-      // postViewModel: {
-      //   getPostsData$,
-      //   postOneItem$,
-      //   postOneItemStream$,
-      //   deleteOneItem$,
-      //   deleteOneItemStream$,
-      // },
-      postViewModel: { getPostDataStream$, postOneItem$, postOneItemStream$ },
+      postViewModel: {
+        getPostDataStream$,
+
+        postOneItem$,
+        postOneItemStream$,
+
+        deleteOneItem$,
+        deleteOneItemStream$,
+      },
     } = e;
 
     return {
       props: {
         getPostsData: getPostDataStream$,
         postOneItem: postOneItem$,
-        // deleteOneItem: deleteOneItem$,
+        deleteOneItem: deleteOneItem$,
       },
       defaultProps: {
         getPostsData: RD.initial,
         postOneItem: constUndefined,
         deleteOneItem: constUndefined,
       },
-      effects$: merge(postOneItemStream$),
-      // effects$: merge(deleteOneItemStream$), //?---------------
+      effects$: merge(postOneItemStream$, deleteOneItemStream$), //?---------------
     };
   })
 );
