@@ -32,6 +32,10 @@ export type TRequest = {
   body: string;
 };
 
+type TDeleteRequest = {
+  id: number;
+};
+
 export const postsViewModel = (): TPostsViewModel => {
   // ?--------------------------------------
 
@@ -57,10 +61,10 @@ export const postsViewModel = (): TPostsViewModel => {
     )
   );
 
-  const deleteOneItem$ = of((id: number) => deleteOneItemTrigger$.next(id));
-  const deleteOneItemTrigger$ = new BehaviorSubject(0);
+  const deleteOneItem$ = of((id: number) => deleteOneItemTrigger$.next({ id }));
+  const deleteOneItemTrigger$ = new Subject<TDeleteRequest>();
   const deleteOneItemStream$ = deleteOneItemTrigger$.pipe(
-    switchMap((id) => deleteOneItem(id))
+    switchMap(({ id }) => deleteOneItem(id))
   );
 
   return {
