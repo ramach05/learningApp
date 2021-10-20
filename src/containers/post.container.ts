@@ -18,12 +18,12 @@ export type PostsContainerContext = {
 const Container = combineContext(ask<PostsContainerContext>(), (e) =>
   withRX<TPostsViewProps>(PostsView)(() => {
     const {
-      postViewModel: { getPostsData$, postOneItem$, postOneItemStream$ },
+      postViewModel: { getPostDataStream$, postOneItem$, postOneItemStream$ },
     } = e;
 
     return {
       props: {
-        getPostsData: getPostsData$,
+        getPostsData: getPostDataStream$,
         postOneItem: postOneItem$,
       },
       defaultProps: {

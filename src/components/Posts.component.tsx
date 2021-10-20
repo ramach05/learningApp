@@ -40,6 +40,7 @@ export const PostsView = (props: TPostsViewProps) => {
       return setInputState((prev) => ({ ...prev, bodyInput: e.target.value }));
     }
   };
+    console.log(props.getPostsData)
 
   return pipe(
     props.getPostsData,
