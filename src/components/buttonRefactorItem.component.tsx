@@ -1,22 +1,18 @@
 import React, { useState } from "react";
 
+type TRefactorFn = {
+  id: number;
+  title: string;
+  body: string;
+  userId: number;
+};
+
 type TProps = {
   initialTitle: string;
   initialBody: string;
   id: number;
   userId: number;
-
-  onRefactorItem: ({
-    id,
-    title,
-    body,
-    userId,
-  }: {
-    id: number;
-    title: string;
-    body: string;
-    userId: number;
-  }) => void;
+  onRefactorItem: ({ id, title, body, userId }: TRefactorFn) => void;
 };
 
 export const ButtonRefactorItem = ({

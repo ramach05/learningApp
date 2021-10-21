@@ -88,7 +88,7 @@ export const ItemsView = (props: TItemsViewProps) => {
   //   );
   // };
 
-  const renderItems = (itemData: TPutResponseShortData) => (
+  const renderItems = (itemData: TGetResponseShortData) => (
     <div className="item" key={itemData.id}>
       <h3 className="item--title">Title: {itemData.title}</h3>
       <p className="item--body">{itemData.body}</p>

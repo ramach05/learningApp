@@ -14,7 +14,7 @@ const postOneItem = itemsController.postItem;
 const deleteOneItem = itemsController.deleteItem;
 const putOneItem = itemsController.putItem;
 
-export type TGetResponseShortData = Pick<TApiItem, "title" | "body" | "id">;
+export type TGetResponseShortData = TApiItem;
 export type TPostResponseShortData = Pick<TApiItem, "title" | "body">;
 export type TDeleteResponseShortData = Pick<TApiItem, "id">;
 export type TPutResponseShortData = TApiItem;
