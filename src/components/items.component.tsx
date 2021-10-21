@@ -1,49 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import * as RD from "@devexperts/remote-data-ts";
 import {
+  TDeleteResponseShortData,
+  TGetResponseShortData,
   TPostResponseShortData,
-  TRequest,
+  TPutResponseShortData,
 } from "../view-models/item.view-model";
 import { AjaxError } from "rxjs/ajax";
 import { pipe } from "fp-ts/pipeable";
 import { ButtonRefactorItem } from "./buttonRefactorItem.component";
 
-export type TPostsViewProps = {
-  getPostsData: RD.RemoteData<AjaxError, TPostResponseShortData[]>;
-  postOneItem: (req: TRequest) => void;
-  deleteOneItem: (id: number) => void;
+export type TItemsViewProps = {
+  getItemsData: RD.RemoteData<AjaxError, TGetResponseShortData[]>;
+  postOneItem: (req: TPostResponseShortData) => void;
+  deleteOneItem: (req: TDeleteResponseShortData) => void;
+  putOneItemStream: (req: TPutResponseShortData) => void;
 };
 
-export const PostsView = (props: TPostsViewProps) => {
+export const ItemsView = (props: TItemsViewProps) => {
+  // console.log("props.getItemsData :>> ", props.getItemsData);
+  // console.log("props.getItemsData.value :>> ", props.getItemsData.value || []);
+
+  // console.log("props :>> ", props);
+
+  const [dataItems, setDataItems] = useState();
+  // const [dataItems, setDataItems] = useState([] as TGetResponseShortData[]);
+
   const [inputState, setInputState] = useState({
     titleInputAdd: "",
     bodyInputAdd: "",
   });
 
-  console.log("props :>> ", props);
-  // console.log("props.postOneItem :>> ", props.postOneItem);
-
-  const renderPostsInfo = (itemData: TPostResponseShortData) => (
-    <div className="item" key={itemData.id}>
-      <h3 className="item--title">Title: {itemData.title}</h3>
-      <p className="item--body">{itemData.body}</p>
-
-      <ButtonRefactorItem
-        initialTitle={itemData.title}
-        initialBody={itemData.body}
-      />
-
-      <button type="button" onClick={() => onDeleteOneItem(itemData.id)}>
-        Delete
-      </button>
-    </div>
-  );
-
-  const onDeleteOneItem = (id: number) => {
+  const onDeleteOneItem = (id: TDeleteResponseShortData) => {
     props.deleteOneItem(id);
   };
 
-  const onRefactorItem = (id: number, title: string, body: string) => {};
+  const onRefactorItem = ({
+    id,
+    title,
+    body,
+    userId,
+  }: {
+    id: number;
+    title: string;
+    body: string;
+    userId: number;
+  }) => {
+    props.putOneItemStream({ userId, id, title, body });
+  };
 
   const onAddOneItem = (e: any) => {
     e.preventDefault();
@@ -54,8 +58,6 @@ export const PostsView = (props: TPostsViewProps) => {
   };
 
   const handleChangeInput = (e: any) => {
-    console.log("inputState :>> ", inputState);
-
     const { id, value } = e.target;
 
     if (id === "add-input-title") {
@@ -72,39 +74,77 @@ export const PostsView = (props: TPostsViewProps) => {
     }
   };
 
+  // const renderAddedItems = () => {
+  //   pipe(
+  //     props.getItemsData,
+  //     RD.fold(
+  //       () => null,
+  //       () => <p>Loading ...</p>,
+  //       () => null,
+  //       (data) => {
+  //         return setDataItems(data);
+  //       }
+  //     )
+  //   );
+  // };
+
+  const renderItems = (itemData: TPutResponseShortData) => (
+    <div className="item" key={itemData.id}>
+      <h3 className="item--title">Title: {itemData.title}</h3>
+      <p className="item--body">{itemData.body}</p>
+
+      <ButtonRefactorItem
+        initialTitle={itemData.title}
+        initialBody={itemData.body}
+        onRefactorItem={onRefactorItem}
+        id={itemData.id}
+        userId={itemData.userId}
+      />
+
+      <button
+        type="button"
+        onClick={() => onDeleteOneItem({ id: itemData.id })}
+      >
+        Delete
+      </button>
+    </div>
+  );
+
   return pipe(
-    props.getPostsData,
+    props.getItemsData,
     RD.fold(
       () => null,
       () => <p>Loading ...</p>,
       () => null,
-      (data) => (
-        <section className="sectionItems">
-          <h1>All posts</h1>
+      (data) => {
+        return (
+          <section className="sectionItems">
+            <h1>All posts</h1>
 
-          <form onSubmit={onAddOneItem}>
-            <input
-              id="add-input-title"
-              type="text"
-              autoComplete="off"
-              placeholder="Title"
-              onChange={handleChangeInput}
-              value={inputState.titleInputAdd}
-            />
-            <input
-              id="add-input-body"
-              type="text"
-              autoComplete="off"
-              placeholder="Body"
-              onChange={handleChangeInput}
-              value={inputState.bodyInputAdd}
-            />
-            <button type="submit">Add one item</button>
-          </form>
+            <form onSubmit={onAddOneItem}>
+              <input
+                id="add-input-title"
+                type="text"
+                autoComplete="off"
+                placeholder="Title"
+                onChange={handleChangeInput}
+                value={inputState.titleInputAdd}
+              />
+              <input
+                id="add-input-body"
+                type="text"
+                autoComplete="off"
+                placeholder="Body"
+                onChange={handleChangeInput}
+                value={inputState.bodyInputAdd}
+              />
+              <button type="submit">Add one post</button>
+            </form>
 
-          {data.map(renderPostsInfo)}
-        </section>
-      )
+            {data.map(renderItems)}
+          </section>
+        );
+      }
     )
   );
 };

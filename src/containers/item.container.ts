@@ -1,54 +1,73 @@
 import { ask, combineContext } from "@devexperts/rx-utils/dist/context.utils";
 import { withRX } from "@devexperts/react-kit/dist/utils/with-rx2";
 import {
-  postsViewModel,
-  TPostsViewModel,
+  itemsViewModel,
+  TItemsViewModel,
 } from "../view-models/item.view-model";
-import { PostsView, TPostsViewProps } from "../components/items.component";
+import { ItemsView, TItemsViewProps } from "../components/items.component";
 import { runOnMount } from "../utils/react.util";
 import { Sink } from "@devexperts/rx-utils/dist/sink.utils";
 import * as RD from "@devexperts/remote-data-ts";
 import { merge } from "rxjs";
 import { constUndefined } from "fp-ts/function";
 
-export type PostsContainerContext = {
-  postViewModel: TPostsViewModel;
+export type ItemsContainerContext = {
+  postViewModel: TItemsViewModel;
 };
 
-const Container = combineContext(ask<PostsContainerContext>(), (e) =>
-  withRX<TPostsViewProps>(PostsView)(() => {
+const Container = combineContext(ask<ItemsContainerContext>(), (e) =>
+  withRX<TItemsViewProps>(ItemsView)(() => {
     const {
       postViewModel: {
-        getPostDataStream$,
+        getItemsDataStream$,
 
         postOneItem$,
         postOneItemStream$,
 
         deleteOneItem$,
         deleteOneItemStream$,
+
+        putOneItem$,
+        putOneItemStream$,
       },
     } = e;
 
     return {
       props: {
-        getPostsData: getPostDataStream$,
+        getItemsData: getItemsDataStream$,
+
         postOneItem: postOneItem$,
+        postOneItemStream: postOneItemStream$,
+
         deleteOneItem: deleteOneItem$,
+
+        putOneItem: putOneItem$,
+        putOneItemStream: putOneItemStream$,
       },
       defaultProps: {
-        getPostsData: RD.initial,
+        getItemsData: RD.initial,
+
         postOneItem: constUndefined,
+        postOneItemStream: postOneItemStream$,
+
         deleteOneItem: constUndefined,
+
+        putOneItem: constUndefined,
+        putOneItemStream: putOneItemStream$,
       },
-      effects$: merge(postOneItemStream$, deleteOneItemStream$), //?---------------
+      effects$: merge(
+        postOneItemStream$,
+        deleteOneItemStream$,
+        putOneItemStream$
+      ),
     };
   })
 );
 
-export const PostsContainer = runOnMount(
+export const ItemsContainer = runOnMount(
   Container,
   () =>
     new Sink({
-      postViewModel: postsViewModel(),
+      postViewModel: itemsViewModel(),
     })
 );

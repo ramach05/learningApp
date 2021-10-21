@@ -1,79 +1,85 @@
 import {
-  postsController,
+  itemsController,
   TApiGetResponse,
   TApiItem,
 } from "../controllers/item.controller";
-import { tap } from "rxjs/operators";
+import { skip, tap } from "rxjs/operators";
 import { switchMap } from "rxjs/internal/operators";
 import { BehaviorSubject, Observable, of, Subject } from "rxjs";
 import * as RD from "@devexperts/remote-data-ts";
 import { AjaxError } from "rxjs/ajax";
 
-const getPostsData = postsController.getPosts;
-const postOneItem = postsController.postItem;
-const deleteOneItem = postsController.deleteItem;
+const getItemsData = itemsController.getItems;
+const postOneItem = itemsController.postItem;
+const deleteOneItem = itemsController.deleteItem;
+const putOneItem = itemsController.putItem;
 
-export type TPostResponseShortData = Pick<TApiItem, "title" | "body" | "id">;
+export type TGetResponseShortData = Pick<TApiItem, "title" | "body" | "id">;
+export type TPostResponseShortData = Pick<TApiItem, "title" | "body">;
+export type TDeleteResponseShortData = Pick<TApiItem, "id">;
+export type TPutResponseShortData = TApiItem;
 
-export type TPostsViewModel = {
-  getPostDataStream$: Observable<
-    RD.RemoteData<AjaxError, TPostResponseShortData[]>
+export type TItemsViewModel = {
+  getItemsDataStream$: Observable<
+    RD.RemoteData<AjaxError, TGetResponseShortData[]>
   >;
 
-  postOneItem$: Observable<(req: TRequest) => void>;
+  postOneItem$: Observable<(req: TPostResponseShortData) => void>;
   postOneItemStream$: Observable<RD.RemoteData<AjaxError, TApiGetResponse>>;
 
-  deleteOneItem$: Observable<(id: number) => void>;
+  deleteOneItem$: Observable<(req: TDeleteResponseShortData) => void>;
   deleteOneItemStream$: Observable<RD.RemoteData<AjaxError, TApiGetResponse>>;
+
+  putOneItem$: Observable<(req: TPutResponseShortData) => void>;
+  putOneItemStream$: Observable<RD.RemoteData<AjaxError, TApiGetResponse>>;
 };
 
-export type TRequest = {
-  title: string;
-  body: string;
-};
-
-type TDeleteRequest = {
-  id: number;
-};
-
-export const postsViewModel = (): TPostsViewModel => {
-  // ?--------------------------------------
-
-  const getPostDataTrigger$ = new BehaviorSubject(true);
-  const getPostDataStream$ = getPostDataTrigger$.pipe(
-    switchMap(() => getPostsData())
+export const itemsViewModel = (): TItemsViewModel => {
+  const getItemsDataTrigger$ = new BehaviorSubject(true);
+  const getItemsDataStream$ = getItemsDataTrigger$.pipe(
+    switchMap(() => getItemsData())
   );
 
-  const postOneItem$ = of((request: TRequest) =>
+  const postOneItem$ = of((request: TPostResponseShortData) =>
     postOneItemTrigger$.next(request)
   );
-  const postOneItemTrigger$ = new Subject<TRequest>();
+  const postOneItemTrigger$ = new Subject<TPostResponseShortData>();
   const postOneItemStream$ = postOneItemTrigger$.pipe(
-    // switchMap((req: TRequest) =>
-    //   postOneItem(req.title, req.body).pipe(
-    //     tap((data) => dataStream$.next(data))
-    //   )
-    // )
     switchMap((req) =>
-      postOneItem(req.title, req.body).pipe(
-        tap(() => getPostDataTrigger$.next(true))
-      )
+      postOneItem(req.title, req.body)
+        .pipe
+        // skip(1),
+        // tap(() => getItemsDataTrigger$.next(true))
+        ()
     )
   );
 
-  const deleteOneItem$ = of((id: number) => deleteOneItemTrigger$.next({ id }));
-  const deleteOneItemTrigger$ = new Subject<TDeleteRequest>();
+  const deleteOneItem$ = of((id: TDeleteResponseShortData) =>
+    deleteOneItemTrigger$.next(id)
+  );
+  const deleteOneItemTrigger$ = new Subject<TDeleteResponseShortData>();
   const deleteOneItemStream$ = deleteOneItemTrigger$.pipe(
     switchMap(({ id }) => deleteOneItem(id))
   );
 
+  const putOneItem$ = of((request: TPutResponseShortData) =>
+    putOneItemTrigger$.next(request)
+  );
+  const putOneItemTrigger$ = new Subject<TPutResponseShortData>();
+  const putOneItemStream$ = putOneItemTrigger$.pipe(
+    switchMap((req) => putOneItem(req.id, req.title, req.body, req.userId))
+  );
+
   return {
-    getPostDataStream$,
+    getItemsDataStream$,
 
     postOneItem$,
     postOneItemStream$,
 
     deleteOneItem$,
     deleteOneItemStream$,
+
+    putOneItem$,
+    putOneItemStream$,
   };
 };

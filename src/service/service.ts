@@ -8,7 +8,7 @@ export enum RequestMethod {
   GET = "GET",
   POST = "POST",
   DELETE = "DELETE",
-  PATCH = "PATCH",
+  PUT = "PUT",
 }
 
 class ApiClient {
@@ -63,6 +63,20 @@ class ApiClient {
     return this.request({
       url,
       method: this.RequestMethod.DELETE,
+    });
+  };
+
+  readonly put = <Response>(
+    url: string,
+    body: { id: number; title: string; body: string; userId: number }
+  ): Observable<RD.RemoteData<AjaxError, Response>> => {
+    return this.request({
+      url,
+      body,
+      method: this.RequestMethod.PUT,
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
     });
   };
 }

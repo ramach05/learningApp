@@ -3,9 +3,29 @@ import React, { useState } from "react";
 type TProps = {
   initialTitle: string;
   initialBody: string;
+  id: number;
+  userId: number;
+
+  onRefactorItem: ({
+    id,
+    title,
+    body,
+    userId,
+  }: {
+    id: number;
+    title: string;
+    body: string;
+    userId: number;
+  }) => void;
 };
 
-export const ButtonRefactorItem = ({ initialTitle, initialBody }: TProps) => {
+export const ButtonRefactorItem = ({
+  initialTitle,
+  initialBody,
+  onRefactorItem,
+  id,
+  userId,
+}: TProps) => {
   const [inputRefactorState, setInputRefactorState] = useState({
     inputRefactorTitle: initialTitle,
     inputRefactorBody: initialBody,
@@ -18,8 +38,6 @@ export const ButtonRefactorItem = ({ initialTitle, initialBody }: TProps) => {
   };
 
   const handleChangeInput = (e: any) => {
-    console.log("inputRefactorState :>> ", inputRefactorState);
-
     const { id, value } = e.target;
 
     if (id === "refactor-input-title") {
@@ -43,7 +61,16 @@ export const ButtonRefactorItem = ({ initialTitle, initialBody }: TProps) => {
       </button>
 
       {visibilityRefactorForm && (
-        <form onSubmit={() => {}}>
+        <form
+          onSubmit={() => {
+            onRefactorItem({
+              id,
+              title: inputRefactorState.inputRefactorTitle,
+              body: inputRefactorState.inputRefactorBody,
+              userId,
+            });
+          }}
+        >
           <input
             id="refactor-input-title"
             type="text"

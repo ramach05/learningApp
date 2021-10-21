@@ -9,8 +9,8 @@ export type TApiItem = {
 
 export type TApiGetResponse = TApiItem[];
 
-const postsControllerInternal = () => {
-  const getPosts = () =>
+const itemsControllerInternal = () => {
+  const getItems = () =>
     Api.get<TApiGetResponse>("https://jsonplaceholder.typicode.com/posts");
 
   const postItem = (title: string, body: string, userId: number = 42) =>
@@ -25,11 +25,28 @@ const postsControllerInternal = () => {
       `https://jsonplaceholder.typicode.com/posts/${id}`
     );
 
+  const putItem = (
+    id: number,
+    title: string,
+    body: string,
+    userId: number = 42
+  ) =>
+    Api.put<TApiGetResponse>(
+      `https://jsonplaceholder.typicode.com/posts/${id}`,
+      {
+        id,
+        title,
+        body,
+        userId,
+      }
+    );
+
   return {
-    getPosts,
+    getItems,
     postItem,
     deleteItem,
+    putItem,
   };
 };
 
-export const postsController = postsControllerInternal();
+export const itemsController = itemsControllerInternal();
