@@ -45,13 +45,7 @@ export const itemsViewModel = (): TItemsViewModel => {
   );
   const postOneItemTrigger$ = new Subject<TPostResponseShortData>();
   const postOneItemStream$ = postOneItemTrigger$.pipe(
-    switchMap((req) =>
-      postOneItem(req.title, req.body)
-        .pipe
-        // skip(1),
-        // tap(() => getItemsDataTrigger$.next(true))
-        ()
-    )
+    switchMap((req) => postOneItem(req.title, req.body))
   );
 
   const deleteOneItem$ = of((id: TDeleteResponseShortData) =>

@@ -8,45 +8,83 @@ import {
 } from "../view-models/item.view-model";
 import { AjaxError } from "rxjs/ajax";
 import { pipe } from "fp-ts/pipeable";
-import { ButtonRefactorItem } from "./buttonRefactorItem.component";
+import {
+  ButtonRefactorItem,
+  TRefactorFn,
+} from "./buttonRefactorItem.component";
+import { TApiGetResponse, TApiItem } from "../controllers/item.controller";
 
 export type TItemsViewProps = {
   getItemsData: RD.RemoteData<AjaxError, TGetResponseShortData[]>;
+
   postOneItem: (req: TPostResponseShortData) => void;
   deleteOneItem: (req: TDeleteResponseShortData) => void;
-  putOneItemStream: (req: TPutResponseShortData) => void;
+  putOneItem: (req: TPutResponseShortData) => void;
+
+  postOneItemStream: RD.RemoteData<AjaxError, TApiGetResponse>;
+  deleteOneItemStream: RD.RemoteData<AjaxError, TApiGetResponse>;
+  putOneItemStream: RD.RemoteData<AjaxError, TApiGetResponse>;
 };
 
 export const ItemsView = (props: TItemsViewProps) => {
-  // console.log("props.getItemsData :>> ", props.getItemsData);
-  // console.log("props.getItemsData.value :>> ", props.getItemsData.value || []);
+  console.log("props :>> ", props);
 
-  // console.log("props :>> ", props);
+  // const [dataItems, setDataItems] = useState([] as TApiItem[]);
 
-  const [dataItems, setDataItems] = useState();
-  // const [dataItems, setDataItems] = useState([] as TGetResponseShortData[]);
+  // console.log("dataItems :>> ", dataItems);
 
   const [inputState, setInputState] = useState({
     titleInputAdd: "",
     bodyInputAdd: "",
   });
 
+  // useEffect(() => {
+  //   pipe(
+  //     props.getItemsData,
+  //     RD.fold(
+  //       () => null,
+  //       () => null,
+  //       () => null,
+  //       (data) => setDataItems(data)
+  //     )
+  //   );
+  // }, [props.getItemsData]);
+
+  // useEffect(() => {
+  //   pipe(
+  //     props.postOneItem,
+  //     RD.fold(
+  //       () => null,
+  //       () => null,
+  //       () => null,
+  //       (data) => setDataItems(data)
+  //     )
+  //   );
+  // }, [props.postOneItem]);
+
+  const asd = useMemo(
+    () =>
+      pipe(
+        props.postOneItemStream,
+        RD.fold(
+          () => null,
+          () => null,
+          () => null,
+          (data) => data
+        )
+      ),
+    [props.postOneItem]
+  );
+
+  console.log("asd :>> ", asd);
+
   const onDeleteOneItem = (id: TDeleteResponseShortData) => {
     props.deleteOneItem(id);
   };
 
-  const onRefactorItem = ({
-    id,
-    title,
-    body,
-    userId,
-  }: {
-    id: number;
-    title: string;
-    body: string;
-    userId: number;
-  }) => {
-    props.putOneItemStream({ userId, id, title, body });
+  const onRefactorItem = (e: any, { id, title, body, userId }: TRefactorFn) => {
+    e.preventDefault();
+    // props.putOneItemStream({ userId, id, title, body });
   };
 
   const onAddOneItem = (e: any) => {
@@ -73,20 +111,6 @@ export const ItemsView = (props: TItemsViewProps) => {
       }));
     }
   };
-
-  // const renderAddedItems = () => {
-  //   pipe(
-  //     props.getItemsData,
-  //     RD.fold(
-  //       () => null,
-  //       () => <p>Loading ...</p>,
-  //       () => null,
-  //       (data) => {
-  //         return setDataItems(data);
-  //       }
-  //     )
-  //   );
-  // };
 
   const renderItems = (itemData: TGetResponseShortData) => (
     <div className="item" key={itemData.id}>

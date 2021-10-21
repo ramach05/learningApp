@@ -12,13 +12,13 @@ import { merge } from "rxjs";
 import { constUndefined } from "fp-ts/function";
 
 export type ItemsContainerContext = {
-  postViewModel: TItemsViewModel;
+  itemsViewModel: TItemsViewModel;
 };
 
 const Container = combineContext(ask<ItemsContainerContext>(), (e) =>
   withRX<TItemsViewProps>(ItemsView)(() => {
     const {
-      postViewModel: {
+      itemsViewModel: {
         getItemsDataStream$,
 
         postOneItem$,
@@ -68,6 +68,6 @@ export const ItemsContainer = runOnMount(
   Container,
   () =>
     new Sink({
-      postViewModel: itemsViewModel(),
+      itemsViewModel: itemsViewModel(),
     })
 );

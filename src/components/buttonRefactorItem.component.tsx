@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 
-type TRefactorFn = {
+export type TRefactorFn = {
   id: number;
   title: string;
   body: string;
@@ -12,7 +12,7 @@ type TProps = {
   initialBody: string;
   id: number;
   userId: number;
-  onRefactorItem: ({ id, title, body, userId }: TRefactorFn) => void;
+  onRefactorItem: (e: any, { id, title, body, userId }: TRefactorFn) => void;
 };
 
 export const ButtonRefactorItem = ({
@@ -58,8 +58,8 @@ export const ButtonRefactorItem = ({
 
       {visibilityRefactorForm && (
         <form
-          onSubmit={() => {
-            onRefactorItem({
+          onSubmit={(e) => {
+            onRefactorItem(e, {
               id,
               title: inputRefactorState.inputRefactorTitle,
               body: inputRefactorState.inputRefactorBody,
