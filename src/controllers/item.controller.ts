@@ -14,7 +14,7 @@ const itemsControllerInternal = () => {
     Api.get<TApiGetResponse>("https://jsonplaceholder.typicode.com/posts");
 
   const postItem = (title: string, body: string, userId: number = 42) =>
-    Api.post<TApiGetResponse>("https://jsonplaceholder.typicode.com/posts", {
+    Api.post<TApiItem>("https://jsonplaceholder.typicode.com/posts", {
       title,
       body,
       userId,
@@ -31,15 +31,12 @@ const itemsControllerInternal = () => {
     body: string,
     userId: number = 42
   ) =>
-    Api.put<TApiGetResponse>(
-      `https://jsonplaceholder.typicode.com/posts/${id}`,
-      {
-        id,
-        title,
-        body,
-        userId,
-      }
-    );
+    Api.put<TApiItem>(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+      id,
+      title,
+      body,
+      userId,
+    });
 
   return {
     getItems,

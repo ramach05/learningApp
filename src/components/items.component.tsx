@@ -21,62 +21,20 @@ export type TItemsViewProps = {
   deleteOneItem: (req: TDeleteResponseShortData) => void;
   putOneItem: (req: TPutResponseShortData) => void;
 
-  postOneItemStream: RD.RemoteData<AjaxError, TApiGetResponse>;
-  deleteOneItemStream: RD.RemoteData<AjaxError, TApiGetResponse>;
-  putOneItemStream: RD.RemoteData<AjaxError, TApiGetResponse>;
+  allItemsDataStream: RD.RemoteData<AjaxError, TGetResponseShortData[]>[];
+
+  // postOneItemStream: RD.RemoteData<AjaxError, TApiItem>;
+  // deleteOneItemStream: RD.RemoteData<AjaxError, TApiGetResponse>;
+  // putOneItemStream: RD.RemoteData<AjaxError, TApiGetResponse>;
 };
 
 export const ItemsView = (props: TItemsViewProps) => {
-  console.log("props :>> ", props);
-
-  // const [dataItems, setDataItems] = useState([] as TApiItem[]);
-
-  // console.log("dataItems :>> ", dataItems);
+  // console.log("props :>> ", props);
 
   const [inputState, setInputState] = useState({
     titleInputAdd: "",
     bodyInputAdd: "",
   });
-
-  // useEffect(() => {
-  //   pipe(
-  //     props.getItemsData,
-  //     RD.fold(
-  //       () => null,
-  //       () => null,
-  //       () => null,
-  //       (data) => setDataItems(data)
-  //     )
-  //   );
-  // }, [props.getItemsData]);
-
-  // useEffect(() => {
-  //   pipe(
-  //     props.postOneItem,
-  //     RD.fold(
-  //       () => null,
-  //       () => null,
-  //       () => null,
-  //       (data) => setDataItems(data)
-  //     )
-  //   );
-  // }, [props.postOneItem]);
-
-  const asd = useMemo(
-    () =>
-      pipe(
-        props.postOneItemStream,
-        RD.fold(
-          () => null,
-          () => null,
-          () => null,
-          (data) => data
-        )
-      ),
-    [props.postOneItem]
-  );
-
-  console.log("asd :>> ", asd);
 
   const onDeleteOneItem = (id: TDeleteResponseShortData) => {
     props.deleteOneItem(id);
@@ -84,7 +42,7 @@ export const ItemsView = (props: TItemsViewProps) => {
 
   const onRefactorItem = (e: any, { id, title, body, userId }: TRefactorFn) => {
     e.preventDefault();
-    // props.putOneItemStream({ userId, id, title, body });
+    props.putOneItem({ userId, id, title, body });
   };
 
   const onAddOneItem = (e: any) => {
@@ -134,41 +92,48 @@ export const ItemsView = (props: TItemsViewProps) => {
     </div>
   );
 
-  return pipe(
-    props.getItemsData,
-    RD.fold(
-      () => null,
-      () => <p>Loading ...</p>,
-      () => null,
-      (data) => {
-        return (
-          <section className="sectionItems">
-            <h1>All posts</h1>
+  console.log("allItemsDataStream :>> ", props.allItemsDataStream);
 
-            <form onSubmit={onAddOneItem}>
-              <input
-                id="add-input-title"
-                type="text"
-                autoComplete="off"
-                placeholder="Title"
-                onChange={handleChangeInput}
-                value={inputState.titleInputAdd}
-              />
-              <input
-                id="add-input-body"
-                type="text"
-                autoComplete="off"
-                placeholder="Body"
-                onChange={handleChangeInput}
-                value={inputState.bodyInputAdd}
-              />
-              <button type="submit">Add one post</button>
-            </form>
-
-            {data.map(renderItems)}
-          </section>
-        );
-      }
+  const renderItemsWithAdded = props.allItemsDataStream.map((rdItem) =>
+    pipe(
+      rdItem,
+      RD.fold(
+        () => null,
+        () => <p>Loading ...</p>,
+        (e) => {
+          console.log("ERROR: ", e);
+          return null;
+        },
+        (data) => <>{data.map((item) => renderItems(item))}</>
+      )
     )
+  );
+
+  return (
+    <section className="sectionItems">
+      <h1>All posts</h1>
+
+      <form onSubmit={onAddOneItem}>
+        <input
+          id="add-input-title"
+          type="text"
+          autoComplete="off"
+          placeholder="Title"
+          onChange={handleChangeInput}
+          value={inputState.titleInputAdd}
+        />
+        <input
+          id="add-input-body"
+          type="text"
+          autoComplete="off"
+          placeholder="Body"
+          onChange={handleChangeInput}
+          value={inputState.bodyInputAdd}
+        />
+        <button type="submit">Add one post</button>
+      </form>
+
+      {renderItemsWithAdded}
+    </section>
   );
 };

@@ -19,6 +19,8 @@ const Container = combineContext(ask<ItemsContainerContext>(), (e) =>
   withRX<TItemsViewProps>(ItemsView)(() => {
     const {
       itemsViewModel: {
+        allItemsDataStream$,
+
         getItemsDataStream$,
 
         postOneItem$,
@@ -34,26 +36,29 @@ const Container = combineContext(ask<ItemsContainerContext>(), (e) =>
 
     return {
       props: {
+        allItemsDataStream: allItemsDataStream$,
+
         getItemsData: getItemsDataStream$,
 
         postOneItem: postOneItem$,
-        postOneItemStream: postOneItemStream$,
+        // postOneItemStream: postOneItemStream$,
 
         deleteOneItem: deleteOneItem$,
+        // deleteOneItemStream: deleteOneItemStream$,
 
         putOneItem: putOneItem$,
-        putOneItemStream: putOneItemStream$,
+        // putOneItemStream: putOneItemStream$,
       },
       defaultProps: {
+        allItemsDataStream: [RD.initial],
+
         getItemsData: RD.initial,
-
         postOneItem: constUndefined,
-        postOneItemStream: postOneItemStream$,
-
+        // postOneItemStream: RD.initial,
         deleteOneItem: constUndefined,
-
+        // deleteOneItemStream: RD.initial,
         putOneItem: constUndefined,
-        putOneItemStream: putOneItemStream$,
+        // putOneItemStream: RD.initial,
       },
       effects$: merge(
         postOneItemStream$,
