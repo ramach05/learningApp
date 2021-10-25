@@ -1,5 +1,6 @@
 import {
   itemsController,
+  TAction,
   TApiGetResponse,
   TApiItem,
 } from "../controllers/item.controller";
@@ -40,7 +41,9 @@ export type TItemsViewModel = {
   postOneItem$: Observable<(req: TPostResponseShortData) => void>;
   postOneItemStream$: Observable<RD.RemoteData<AjaxError, TApiItem>>;
 
-  deleteOneItem$: Observable<(req: TDeleteResponseShortData) => void>;
+  deleteOneItem$: Observable<
+    (id: TDeleteResponseShortData, item: TApiItem) => void
+  >;
   deleteOneItemStream$: Observable<RD.RemoteData<AjaxError, TApiGetResponse>>;
 
   putOneItem$: Observable<(req: TPutResponseShortData) => void>;
@@ -61,10 +64,8 @@ export const itemsViewModel = (): TItemsViewModel => {
         console.log("value :>> ", value);
 
         const filteredAcc = acc.filter(
-          (item: RD.RemoteData<AjaxError, TGetResponseShortData[]>) => {
-            // console.log("item :>> ", item);
-            return isSuccess(item);
-          }
+          (item: RD.RemoteData<AjaxError, TGetResponseShortData[]>) =>
+            isSuccess(item)
         );
 
         console.log("filteredAcc :>> ", filteredAcc);
@@ -75,24 +76,39 @@ export const itemsViewModel = (): TItemsViewModel => {
             ...filteredAcc
           );
 
+          console.log("rd5 :>> ", rd5);
+
+          // let rd6: RD.RemoteData<AjaxError, TApiItem[]>;
+
+          const action = value.value[0].action;
+
           const rd6 = pipe(
             rd5,
             RD.map((initialItems) => {
               const [firstItem, ...restItems] = initialItems.flat();
-              const ind = restItems.findIndex((v) => v.id === firstItem.id);
 
-              if (ind === -1) {
-                return [firstItem, ...restItems];
+              let ind: number;
+
+              switch (action) {
+                case "EDIT":
+                  ind = restItems.findIndex((v) => v.id === firstItem.id);
+                  restItems[ind] = firstItem;
+                  return restItems;
+
+                case "DELETE":
+                  ind = restItems.findIndex((v) => v.id === firstItem.id);
+                  const newRestItemsBefore = restItems.slice(0, ind);
+                  const newRestItemsAfter = restItems.slice(ind + 1);
+                  return [...newRestItemsBefore, ...newRestItemsAfter];
+
+                case "ADD":
+                  return [firstItem, ...restItems];
+
+                default:
+                  return [...restItems];
               }
-
-              restItems[ind] = firstItem;
-              console.log("items rd6 :>> ", restItems);
-              return restItems;
             })
           );
-
-          console.log("rd5 :>> ", rd5);
-          console.log("rd6 :>> ", rd6);
 
           return [rd6];
         }
@@ -118,7 +134,7 @@ export const itemsViewModel = (): TItemsViewModel => {
           allItemsDataStreamTrigger$.next(
             pipe(
               value,
-              RD.map((value) => [value])
+              RD.map((value) => [{ ...value, action: TAction.add }])
             )
           )
         )
@@ -126,22 +142,25 @@ export const itemsViewModel = (): TItemsViewModel => {
     )
   );
 
-  const deleteOneItem$ = of((id: TDeleteResponseShortData) =>
-    deleteOneItemTrigger$.next(id)
+  const deleteOneItem$ = of((id: TDeleteResponseShortData, item: TApiItem) =>
+    deleteOneItemTrigger$.next({ id, item })
   );
-  const deleteOneItemTrigger$ = new Subject<TDeleteResponseShortData>();
+  const deleteOneItemTrigger$ = new Subject<{
+    id: TDeleteResponseShortData;
+    item: TApiItem;
+  }>();
   const deleteOneItemStream$ = deleteOneItemTrigger$.pipe(
     switchMap((req) => {
       console.log("id :>> ", req.id);
 
-      return deleteOneItem(req.id).pipe(
+      return deleteOneItem(req.id.id).pipe(
         tap((value) => {
           console.log("value deleteOneItem :>> ", value);
 
           return allItemsDataStreamTrigger$.next(
             pipe(
               value as RD.RemoteData<AjaxError, TApiItem>,
-              RD.map((value) => [value])
+              RD.map(() => [{ ...req.item, action: TAction.delete }])
             )
           );
         })
@@ -160,7 +179,7 @@ export const itemsViewModel = (): TItemsViewModel => {
           allItemsDataStreamTrigger$.next(
             pipe(
               value,
-              RD.map((value) => [value])
+              RD.map((value) => [{ ...value, action: TAction.edit }])
             )
           )
         )

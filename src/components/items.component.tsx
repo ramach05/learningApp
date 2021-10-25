@@ -18,7 +18,7 @@ export type TItemsViewProps = {
   getItemsData: RD.RemoteData<AjaxError, TGetResponseShortData[]>;
 
   postOneItem: (req: TPostResponseShortData) => void;
-  deleteOneItem: (req: TDeleteResponseShortData) => void;
+  deleteOneItem: (id: TDeleteResponseShortData, item: TApiItem) => void;
   putOneItem: (req: TPutResponseShortData) => void;
 
   allItemsDataStream: RD.RemoteData<AjaxError, TGetResponseShortData[]>[];
@@ -36,8 +36,8 @@ export const ItemsView = (props: TItemsViewProps) => {
     bodyInputAdd: "",
   });
 
-  const onDeleteOneItem = (id: TDeleteResponseShortData) => {
-    props.deleteOneItem(id);
+  const onDeleteOneItem = (id: TDeleteResponseShortData, item: TApiItem) => {
+    props.deleteOneItem(id, item);
   };
 
   const onRefactorItem = (e: any, { id, title, body, userId }: TRefactorFn) => {
@@ -85,7 +85,7 @@ export const ItemsView = (props: TItemsViewProps) => {
 
       <button
         type="button"
-        onClick={() => onDeleteOneItem({ id: itemData.id })}
+        onClick={() => onDeleteOneItem({ id: itemData.id }, itemData)}
       >
         Delete
       </button>

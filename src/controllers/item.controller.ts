@@ -1,10 +1,17 @@
 import { Api } from "../service/service";
 
+export enum TAction {
+  edit = "EDIT",
+  delete = "DELETE",
+  add = "ADD",
+}
+
 export type TApiItem = {
   userId: number;
   id: number;
   title: string;
   body: string;
+  action?: TAction;
 };
 
 export type TApiGetResponse = TApiItem[];
