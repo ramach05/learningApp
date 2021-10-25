@@ -41,24 +41,18 @@ const Container = combineContext(ask<ItemsContainerContext>(), (e) =>
         getItemsData: getItemsDataStream$,
 
         postOneItem: postOneItem$,
-        // postOneItemStream: postOneItemStream$,
 
         deleteOneItem: deleteOneItem$,
-        // deleteOneItemStream: deleteOneItemStream$,
 
         putOneItem: putOneItem$,
-        // putOneItemStream: putOneItemStream$,
       },
       defaultProps: {
         allItemsDataStream: [RD.initial],
 
         getItemsData: RD.initial,
         postOneItem: constUndefined,
-        // postOneItemStream: RD.initial,
         deleteOneItem: constUndefined,
-        // deleteOneItemStream: RD.initial,
         putOneItem: constUndefined,
-        // putOneItemStream: RD.initial,
       },
       effects$: merge(
         postOneItemStream$,

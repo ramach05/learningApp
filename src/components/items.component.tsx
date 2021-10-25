@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import * as RD from "@devexperts/remote-data-ts";
 import {
   TDeleteResponseShortData,
@@ -12,7 +12,7 @@ import {
   ButtonRefactorItem,
   TRefactorFn,
 } from "./buttonRefactorItem.component";
-import { TApiGetResponse, TApiItem } from "../controllers/item.controller";
+import { TApiItem } from "../controllers/item.controller";
 
 export type TItemsViewProps = {
   getItemsData: RD.RemoteData<AjaxError, TGetResponseShortData[]>;
@@ -22,15 +22,9 @@ export type TItemsViewProps = {
   putOneItem: (req: TPutResponseShortData) => void;
 
   allItemsDataStream: RD.RemoteData<AjaxError, TGetResponseShortData[]>[];
-
-  // postOneItemStream: RD.RemoteData<AjaxError, TApiItem>;
-  // deleteOneItemStream: RD.RemoteData<AjaxError, TApiGetResponse>;
-  // putOneItemStream: RD.RemoteData<AjaxError, TApiGetResponse>;
 };
 
 export const ItemsView = (props: TItemsViewProps) => {
-  // console.log("props :>> ", props);
-
   const [inputState, setInputState] = useState({
     titleInputAdd: "",
     bodyInputAdd: "",
@@ -91,8 +85,6 @@ export const ItemsView = (props: TItemsViewProps) => {
       </button>
     </div>
   );
-
-  console.log("allItemsDataStream :>> ", props.allItemsDataStream);
 
   const renderItemsFinalData = props.allItemsDataStream.map((rdItem) =>
     pipe(

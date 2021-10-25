@@ -4,18 +4,12 @@ import {
   TApiGetResponse,
   TApiItem,
 } from "../controllers/item.controller";
-import { scan, skip, tap } from "rxjs/operators";
+import { scan, tap } from "rxjs/operators";
 import { switchMap } from "rxjs/internal/operators";
 import { BehaviorSubject, Observable, of, Subject } from "rxjs";
 import * as RD from "@devexperts/remote-data-ts";
 import { AjaxError } from "rxjs/ajax";
-import {
-  combine,
-  isFailure,
-  isInitial,
-  isPending,
-  isSuccess,
-} from "@devexperts/remote-data-ts";
+import { isSuccess } from "@devexperts/remote-data-ts";
 import { pipe } from "fp-ts/lib/function";
 import { sequenceT } from "fp-ts/lib/Apply";
 
@@ -61,29 +55,21 @@ export const itemsViewModel = (): TItemsViewModel => {
         acc: RD.RemoteData<AjaxError, TGetResponseShortData[]>[],
         value: RD.RemoteData<AjaxError, TGetResponseShortData[]>
       ) => {
-        console.log("value :>> ", value);
-
         const filteredAcc = acc.filter(
           (item: RD.RemoteData<AjaxError, TGetResponseShortData[]>) =>
             isSuccess(item)
         );
 
-        console.log("filteredAcc :>> ", filteredAcc);
-
         if (isSuccess(value)) {
-          const rd5 = sequenceT(RD.remoteData)(
+          const rdSequence = sequenceT(RD.remoteData)(
             value as RD.RemoteData<AjaxError, TGetResponseShortData[]>,
             ...filteredAcc
           );
 
-          console.log("rd5 :>> ", rd5);
-
-          // let rd6: RD.RemoteData<AjaxError, TApiItem[]>;
-
           const action = value.value[0].action;
 
-          const rd6 = pipe(
-            rd5,
+          const rdFinal = pipe(
+            rdSequence,
             RD.map((initialItems) => {
               const [firstItem, ...restItems] = initialItems.flat();
 
@@ -110,7 +96,7 @@ export const itemsViewModel = (): TItemsViewModel => {
             })
           );
 
-          return [rd6];
+          return [rdFinal];
         }
 
         return [value, ...filteredAcc];
@@ -151,12 +137,8 @@ export const itemsViewModel = (): TItemsViewModel => {
   }>();
   const deleteOneItemStream$ = deleteOneItemTrigger$.pipe(
     switchMap((req) => {
-      console.log("id :>> ", req.id);
-
       return deleteOneItem(req.id.id).pipe(
         tap((value) => {
-          console.log("value deleteOneItem :>> ", value);
-
           return allItemsDataStreamTrigger$.next(
             pipe(
               value as RD.RemoteData<AjaxError, TApiItem>,
