@@ -67,6 +67,8 @@ export const itemsViewModel = (): TItemsViewModel => {
           }
         );
 
+        console.log("filteredAcc :>> ", filteredAcc);
+
         if (isSuccess(value)) {
           const rd5 = sequenceT(RD.remoteData)(
             value as RD.RemoteData<AjaxError, TGetResponseShortData[]>,
@@ -80,7 +82,7 @@ export const itemsViewModel = (): TItemsViewModel => {
               const ind = restItems.findIndex((v) => v.id === firstItem.id);
 
               if (ind === -1) {
-                return initialItems.flat();
+                return [firstItem, ...restItems];
               }
 
               restItems[ind] = firstItem;
@@ -129,7 +131,22 @@ export const itemsViewModel = (): TItemsViewModel => {
   );
   const deleteOneItemTrigger$ = new Subject<TDeleteResponseShortData>();
   const deleteOneItemStream$ = deleteOneItemTrigger$.pipe(
-    switchMap(({ id }) => deleteOneItem(id))
+    switchMap((req) => {
+      console.log("id :>> ", req.id);
+
+      return deleteOneItem(req.id).pipe(
+        tap((value) => {
+          console.log("value deleteOneItem :>> ", value);
+
+          return allItemsDataStreamTrigger$.next(
+            pipe(
+              value as RD.RemoteData<AjaxError, TApiItem>,
+              RD.map((value) => [value])
+            )
+          );
+        })
+      );
+    })
   );
 
   const putOneItem$ = of((request: TPutResponseShortData) =>

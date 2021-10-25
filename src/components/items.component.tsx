@@ -94,7 +94,7 @@ export const ItemsView = (props: TItemsViewProps) => {
 
   console.log("allItemsDataStream :>> ", props.allItemsDataStream);
 
-  const renderItemsWithAdded = props.allItemsDataStream.map((rdItem) =>
+  const renderItemsFinalData = props.allItemsDataStream.map((rdItem) =>
     pipe(
       rdItem,
       RD.fold(
@@ -133,7 +133,7 @@ export const ItemsView = (props: TItemsViewProps) => {
         <button type="submit">Add one post</button>
       </form>
 
-      {renderItemsWithAdded}
+      {renderItemsFinalData}
     </section>
   );
 };
