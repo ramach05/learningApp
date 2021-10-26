@@ -8,6 +8,8 @@ import {
 } from "../view-models/item.view-model";
 import { AjaxError } from "rxjs/ajax";
 import { pipe } from "fp-ts/pipeable";
+import * as O from "fp-ts/Option";
+import * as A from "fp-ts/Array";
 import {
   ButtonRefactorItem,
   TRefactorFn,
@@ -64,6 +66,14 @@ export const ItemsView = (props: TItemsViewProps) => {
     }
   };
 
+  const onAddToLocalStorage = (targetId: number) => {
+    const dataFromStorage = O.fromNullable(
+      JSON.parse(localStorage.getItem("asd") as string)
+    );
+
+    pipe(dataFromStorage, O.map(A.findFirst((id) => targetId === id)));
+  };
+
   const renderItems = (itemData: TGetResponseShortData) => (
     <div className="item" key={itemData.id}>
       <h3 className="item--title">Title: {itemData.title}</h3>
@@ -82,6 +92,10 @@ export const ItemsView = (props: TItemsViewProps) => {
         onClick={() => onDeleteOneItem({ id: itemData.id }, itemData)}
       >
         Delete
+      </button>
+
+      <button type="button" onClick={() => onAddToLocalStorage(itemData.id)}>
+        Add id to LocalStorage
       </button>
     </div>
   );
