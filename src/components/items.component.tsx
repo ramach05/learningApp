@@ -91,7 +91,12 @@ export const ItemsView = (props: TItemsViewProps) => {
       rdItem,
       RD.fold(
         () => null,
-        () => <p>Loading ...</p>,
+        () => (
+          <div className="loader">
+            <div className="loader--bg"></div>
+            <p className="loader--title">Loading ...</p>
+          </div>
+        ),
         (e) => {
           console.log("ERROR: ", e);
           return null;

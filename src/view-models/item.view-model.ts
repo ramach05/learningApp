@@ -73,21 +73,21 @@ export const itemsViewModel = (): TItemsViewModel => {
             RD.map((initialItems) => {
               const [firstItem, ...restItems] = initialItems.flat();
 
-              let ind: number;
-
               switch (action) {
-                case "EDIT":
-                  ind = restItems.findIndex((v) => v.id === firstItem.id);
+                case TAction.edit: {
+                  const ind = restItems.findIndex((v) => v.id === firstItem.id);
                   restItems[ind] = firstItem;
                   return restItems;
+                }
 
-                case "DELETE":
-                  ind = restItems.findIndex((v) => v.id === firstItem.id);
+                case TAction.delete: {
+                  const ind = restItems.findIndex((v) => v.id === firstItem.id);
                   const newRestItemsBefore = restItems.slice(0, ind);
                   const newRestItemsAfter = restItems.slice(ind + 1);
                   return [...newRestItemsBefore, ...newRestItemsAfter];
+                }
 
-                case "ADD":
+                case TAction.add:
                   return [firstItem, ...restItems];
 
                 default:
