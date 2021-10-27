@@ -10,6 +10,8 @@ import { AjaxError } from "rxjs/ajax";
 import { pipe } from "fp-ts/pipeable";
 import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
+import * as t from "io-ts";
+import * as E from "fp-ts/Either";
 import {
   ButtonRefactorItem,
   TRefactorFn,
@@ -31,6 +33,8 @@ export const ItemsView = (props: TItemsViewProps) => {
     titleInputAdd: "",
     bodyInputAdd: "",
   });
+
+  const isNumArr = t.array(t.number);
 
   const onDeleteOneItem = (id: TDeleteResponseShortData, item: TApiItem) => {
     props.deleteOneItem(id, item);
@@ -67,11 +71,22 @@ export const ItemsView = (props: TItemsViewProps) => {
   };
 
   const onAddToLocalStorage = (targetId: number) => {
-    const dataFromStorage = O.fromNullable(
-      JSON.parse(localStorage.getItem("asd") as string)
+    pipe(
+      O.fromNullable(localStorage.getItem("asd")),
+      O.map((data) => JSON.parse(data)),
+      O.map(isNumArr.decode),
+      O.map((s) => {
+        if (E.isLeft(s)) {
+          console.log("ERROR Either.left :>> ", s.left[0]);
+        }
+        return s;
+      }),
+      O.chain(O.fromEither),
+      O.filter((arr) => !arr.includes(targetId)),
+      O.map((arr) =>
+        localStorage.setItem("asd", JSON.stringify(arr.concat(targetId)))
+      )
     );
-
-    pipe(dataFromStorage, O.map(A.findFirst((id) => targetId === id)));
   };
 
   const renderItems = (itemData: TGetResponseShortData) => (
